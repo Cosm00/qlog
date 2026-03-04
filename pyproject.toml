@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qlog-cli"
+version = "0.2.0"
+description = "Lightning-fast local log search and analysis"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [{name = "Cosmo"}]
+urls = {"Homepage" = "https://github.com/Cosm00/qlog"}
+dependencies = [
+  "rich>=13.0.0",
+  "click>=8.0.0",
+  "python-dateutil>=2.8.0",
+]
+
+[project.scripts]
+qlog = "qlog.cli:main"
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]

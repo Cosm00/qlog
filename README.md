@@ -1,5 +1,7 @@
 # 🚀 qlog - Query Logs at Ludicrous Speed
 
+[![PyPI](https://img.shields.io/pypi/v/qlog-cli.svg)](https://pypi.org/project/qlog-cli/) [![Python](https://img.shields.io/pypi/pyversions/qlog-cli.svg)](https://pypi.org/project/qlog-cli/)
+
 **grep is too slow. Elasticsearch is too heavy. qlog is just right.**
 
 ```bash
@@ -23,7 +25,7 @@ qlog stats
 | Feature | grep | qlog | Elasticsearch |
 |---------|------|------|---------------|
 | **Speed** | Slow on large files | ⚡ 10-100x faster | Fast but heavy |
-| **Setup** | None | `pip install qlog` | Complex setup |
+| **Setup** | None | `pip install qlog-cli` | Complex setup |
 | **Memory** | Low | Low | High (GB) |
 | **Offline** | ✅ | ✅ | ❌ Needs server |
 | **Context Lines** | ❌ Clunky | ✅ Built-in | ✅ |
@@ -43,7 +45,7 @@ qlog stats
 ## Installation
 
 ```bash
-pip install qlog
+pip install qlog-cli
 ```
 
 Or install from source:
