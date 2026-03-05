@@ -20,7 +20,7 @@ console = Console()
 
 
 @click.group()
-@click.version_option(version="0.2.0")
+@click.version_option(version="0.2.1")
 def main():
     """qlog - Lightning-fast local log search and analysis.
     

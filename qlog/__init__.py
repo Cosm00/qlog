@@ -1,6 +1,6 @@
 """qlog - Lightning-fast local log search and analysis."""
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from .indexer import LogIndexer
 from .search import LogSearcher

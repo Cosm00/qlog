@@ -223,6 +223,14 @@ class CustomIndexer(LogIndexer):
 - **Pros:** Free, open-source, no licensing, simpler
 - **Cons:** Fewer features, no distributed search
 
+## Changelog
+
+### 0.2.1
+- Faster result retrieval (mmap offset reads; no full-file readlines per match)
+- Index hygiene: stable file IDs + purge old postings on reindex
+- New command: `qlog watch <patterns> [--filter QUERY]`
+- GitHub issue templates
+
 ## Roadmap
 
 - [ ] Live tail with search filtering (`qlog tail --filter "error"`)
