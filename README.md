@@ -51,7 +51,7 @@ pip install qlog-cli
 Or install from source:
 
 ```bash
-git clone https://github.com/your-username/qlog
+git clone https://github.com/Cosm00/qlog
 cd qlog
 pip install -e .
 ```
@@ -240,7 +240,7 @@ Contributions welcome! This is a community project.
 
 ```bash
 # Clone repo
-git clone https://github.com/your-username/qlog
+git clone https://github.com/Cosm00/qlog
 cd qlog
 
 # Install dev dependencies
