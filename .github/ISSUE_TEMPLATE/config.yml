@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions / ideas
+    url: https://github.com/Cosm00/qlog/discussions
+    about: Use GitHub Discussions for Q&A and brainstorming.

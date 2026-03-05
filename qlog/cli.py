@@ -2,6 +2,8 @@
 
 import click
 from pathlib import Path
+import time
+
 from rich.console import Console
 from rich.table import Table
 from rich.syntax import Syntax
@@ -169,10 +171,46 @@ def stats():
 
 
 @main.command()
+@click.argument("patterns", nargs=-1, required=True)
+@click.option("--filter", "filter_query", default="", help="Optional query to run after each reindex")
+@click.option("--interval", default=1.0, type=float, show_default=True, help="Poll interval in seconds")
+@click.option("--context", "context_lines", default=0, type=int, show_default=True, help="Context lines for --filter")
+def watch(patterns, filter_query, interval, context_lines):
+    """Watch files and reindex automatically.
+
+    This is a simple polling-based watcher that works anywhere (no watchdog dependency).
+
+    Examples:
+      qlog watch '/var/log/nginx/*.log' --filter "500" --context 2
+    """
+    indexer = LogIndexer()
+
+    console.print(f"[bold blue]👀 Watching {len(patterns)} pattern(s) every {interval}s...[/bold blue]")
+    if filter_query:
+        console.print(f"[dim]Auto-search after reindex: {filter_query}[/dim]")
+
+    last_hashes: dict[str, str] = {}
+
+    while True:
+        stats = indexer.index_files(list(patterns), force=False)
+
+        # if anything reindexed, run an optional search
+        if stats.get("files", 0) > 0 and filter_query:
+            searcher = LogSearcher(indexer)
+            results = searcher.search(filter_query, context=context_lines, max_results=25)
+            console.print(f"\n[bold green]✨ {len(results)} results for[/bold green] {filter_query}\n")
+            for r in results[:10]:
+                console.print(f"[cyan]{r['file']}[/cyan]:[green]{r['line_num']}[/green] {r['line']}")
+            console.print()
+
+        time.sleep(interval)
+
+
+@main.command()
 def clear():
     """Clear the index."""
     import shutil
-    
+
     index_dir = Path(".qlog")
     if index_dir.exists():
         shutil.rmtree(index_dir)

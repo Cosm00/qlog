@@ -64,10 +64,27 @@ class LogIndexer:
         }
     
     def _index_file(self, filepath: str, file_hash: str) -> int:
-        """Index a single file using mmap for speed."""
-        file_id = self.file_id_counter
-        self.file_id_counter += 1
-        
+        """Index a single file using mmap for speed.
+
+        Index hygiene:
+        - Keep file_id stable per filepath.
+        - If a file is re-indexed, remove old postings for that file_id.
+        """
+
+        # Reuse existing file_id for this path if present
+        file_id = None
+        for fid, meta in self.files.items():
+            if meta.get("path") == filepath:
+                file_id = fid
+                break
+
+        if file_id is None:
+            file_id = self.file_id_counter
+            self.file_id_counter += 1
+        else:
+            # purge any old postings for this file_id (prevents stale matches / index bloat)
+            self._purge_file(file_id)
+
         self.files[file_id] = {
             "path": filepath,
             "hash": file_hash,
@@ -153,11 +170,24 @@ class LogIndexer:
         ).hexdigest()
     
     def _is_indexed(self, filepath: str, file_hash: str) -> bool:
-        """Check if file is already indexed."""
-        for file_id, meta in self.files.items():
-            if meta["path"] == filepath and meta["hash"] == file_hash:
+        """Check if file is already indexed (same path + hash)."""
+        for _, meta in self.files.items():
+            if meta.get("path") == filepath and meta.get("hash") == file_hash:
                 return True
         return False
+
+    def _purge_file(self, file_id: int) -> None:
+        """Remove all postings for a given file_id from the inverted index."""
+        # NOTE: this is O(#terms) but keeps correctness simple for now.
+        for token, postings in list(self.index.items()):
+            if not postings:
+                continue
+            new_postings = [p for p in postings if p[0] != file_id]
+            if new_postings:
+                self.index[token] = new_postings
+            else:
+                # drop empty term to keep index smaller
+                self.index.pop(token, None)
     
     def _save_index(self):
         """Save index to disk."""
