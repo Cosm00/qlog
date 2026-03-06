@@ -32,10 +32,27 @@ qlog stats
 | **Beautiful Output** | ❌ | ✅ | ✅ |
 | **Auto-format Detection** | ❌ | ✅ | With config |
 
+## When to Use qlog
+
+✅ **Use qlog when:**
+- Developing locally and need to search app logs quickly
+- Debugging CI/CD pipelines with large log artifacts  
+- Running small projects/side projects where Elasticsearch is overkill
+- You want grep-speed search but for repeated queries
+- Monitoring local log files with live filtering
+
+❌ **Don't use qlog for:**
+- Production observability at scale (use Datadog, Splunk, ELK, etc.)
+- Team collaboration on live production logs (use centralized logging)
+- Real-time alerting across distributed systems (use an observability platform)
+
+**Think of qlog like ripgrep for logs** - it complements (not replaces) your production logging stack.
+
 ## Features
 
 - ⚡ **Blazingly Fast** - Inverted index searches millions of lines/second
 - 🎯 **Smart Indexing** - Only re-indexes changed files
+- 👁️ **Watch Mode** - Monitor files and auto-reindex with live filtering
 - 🎨 **Beautiful Output** - Color-coded, context-aware results
 - 📊 **Format Detection** - Auto-detects JSON, syslog, nginx, apache, and more
 - 🔍 **Context Aware** - See lines before/after matches
@@ -89,7 +106,16 @@ qlog search "timeout" -n 50
 qlog search "critical" --json | jq '.[] | .file'
 ```
 
-### 3. Check Statistics
+### 3. Watch for Live Changes
+
+```bash
+# Monitor logs with auto-reindexing
+qlog watch './logs/**/*.log' --filter "error"
+```
+
+Perfect for monitoring local services during development.
+
+### 4. Check Statistics
 
 ```bash
 qlog stats
@@ -127,6 +153,19 @@ qlog index '/var/log/nginx/*.log'
 
 # Find slow requests
 qlog search "upstream_response_time" --context 2
+```
+
+### Live Monitoring with Watch Mode
+
+```bash
+# Watch logs and auto-reindex on changes
+qlog watch './logs/**/*.log'
+
+# Watch with live filtering (only show errors)
+qlog watch './logs/**/*.log' --filter "error"
+
+# Watch with custom interval (default: 5s)
+qlog watch './app.log' --filter "exception" --interval 2
 ```
 
 ## Performance
@@ -233,14 +272,13 @@ class CustomIndexer(LogIndexer):
 
 ## Roadmap
 
-- [ ] Live tail with search filtering (`qlog tail --filter "error"`)
 - [ ] Time-based queries (`qlog search "error" --since "1h ago"`)
 - [ ] Cross-service correlation (trace IDs)
 - [ ] Export to CSV/JSON with aggregations
 - [ ] TUI (interactive terminal UI)
-- [ ] Watch mode (auto-reindex on file changes)
 - [ ] Regular expression queries
 - [ ] Fuzzy search
+- [ ] Web UI for non-CLI users
 
 ## Contributing
 
